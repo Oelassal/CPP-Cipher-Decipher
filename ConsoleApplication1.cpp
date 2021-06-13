@@ -131,7 +131,7 @@ string generateKey(string str, string key)
              int x = (str[i] + key[i]) % 26;
 
              // convert into alphabets(ASCII)
-             x += 'A';
+             x += 'a';
 
              cipher_text.push_back(x);
          }
@@ -399,10 +399,7 @@ void rail_fence() {
                 else if (choose == 5)
                 {
                     cout << "\n====================Playfair Encryption====================" << endl;
-                    cout << "\nText : " << text << endl;
-                     playfair_enc(text);
-                    system("PAUSE");
-                    system("CLS");
+                 
                 }
                 else if (choose == 6)
                 {
@@ -440,6 +437,17 @@ void rail_fence() {
                     cout << "\nPlease Enter The Second Key:(integers only)";
                     cin >> k;
                     cout << "Affine Cipher For Text is: " << affine_dec(text, s, k) << endl;
+                    system("PAUSE");
+                    system("CLS");
+                }
+                else if (choose == 3)
+                {
+                    cout << "\n====================Simple vigenere Encryption====================" << endl;
+                    cout << "\nText : " << text;
+                    cout << "\nPlease Enter The Keyword:";
+                    cin >> keyenc;
+                    string key = generateKey(text, keyenc);
+                    cout << "Simple Vigenere Cipher For Text is: " << vigenere_dec(text, key) << endl;
                     system("PAUSE");
                     system("CLS");
                 }
