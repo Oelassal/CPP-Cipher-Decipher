@@ -6,8 +6,8 @@
 #include <string>
 #include <fstream>
 #include <cmath>
-#include<vector>
-#include<map>
+#include <vector>
+#include <map>
 
 using namespace std;
 ifstream inputFile;
@@ -28,7 +28,7 @@ void WelcomeScreen() {
 
 // input selector
 string selector() {
-    cout << "Please Select the input method:\n1)By Typing\n2)By FileName";
+    cout << "Please Select the input method:\n1)By Typing\n2)By FileName\nChoice:";
     cin >> inp;
     switch (inp) {
     case 1: {
@@ -128,7 +128,7 @@ string generateKey(string str, string key)
          for (int i = 0; i < str.size(); i++)
          {
              // converting in range 0-25
-             char x = (str[i] + key[i]) % 26;
+             int x = (str[i] + key[i]) % 26;
 
              // convert into alphabets(ASCII)
              x += 'A';
@@ -137,7 +137,7 @@ string generateKey(string str, string key)
          }
          return cipher_text;
      }
- string playfair_enc(string origin) {
+void playfair_enc(string origin) {
      int i, j, k, n;
      string s;
      //Enter key for playfair cipher
@@ -220,9 +220,45 @@ string generateKey(string str, string key)
              ans += a[y2][x1];
          }
      }
-     return ans;
+     cout << "PlayFair Cipher For Text is: " << ans << endl;
+   
  }
-
+void rail_fence() {
+     int t, n, m, i, j, k, sum = 0;
+     string s;
+    /* cout << "Enter the message" << '\n';
+     cin >> s;*/
+     cout <<"Text entered is:"<< text;
+     cout << "\nEnter key:";
+     cin >> n; 
+     cout << "Rail Fence Cipher For Text is: ";
+     vector<vector<char>> a(n, vector<char>(text.size(), ' '));
+     j = 0;
+     int flag = 0;
+     char read;
+     //cipher here
+     for (i = 0; i < text.size(); i++) {
+         a[j][i] = text[i];
+         if (j == n - 1) {
+             flag = 1;
+         }
+         else if (j == 0)
+             flag = 0;
+         if (flag == 0) {
+             j++;
+         }
+         else j--;
+     }
+     //reading off
+     for (i = 0; i < n; i++) {
+         for (j = 0; j < text.size(); j++) {
+             if (a[i][j] != ' '){
+                 cout << a[i][j];
+             }
+         }
+     }
+     
+ }
  ///////////////Decryption Functions///////////////////////////
     string caesar_dec(string text, int s) {
         string result = "";
@@ -312,11 +348,11 @@ string generateKey(string str, string key)
             case 1:
             {
                 selector();
-                cout << "\nchoose the method :\n1. Ceasar (additive) cipher\n2. Affine cipher\n3. Simple shift vignere cipher" << endl;
-                cout << "4.Fall vignere cipher.\n5.Playfair cipher\n6.Unknown cipher.\n7.S - box" << endl;
+                cout << "\nchoose the method :\n1.Ceasar (additive) cipher\n2.Affine cipher\n3.Simple shift vignere cipher" << endl;
+                cout << "4.Fall vignere cipher.\n5.Playfair cipher\n6.Rail Fence cipher.\n7.S-box" << endl;
                 cin >> choose;
                 if (choose == 1) {
-                    cout << "====================Caesar Encryption====================";
+                    cout << "====================Caesar Encryption====================" << endl;
                     cout << "\nText : " << text;
                     cout << "\nShift: ";
                     cin >> s;
@@ -329,7 +365,7 @@ string generateKey(string str, string key)
 
                 else if (choose == 2)
                 {
-                    cout << "\n====================Affine Encryption====================";
+                    cout << "\n====================Affine Encryption====================" << endl;
                     cout << "\nText : " << text;
                     //First key for affine cipher
                     cout << "\nPlease Enter The First Key:";
@@ -345,38 +381,34 @@ string generateKey(string str, string key)
                 }
                 else if (choose == 3)
                 {
-                    cout << "\n====================Simple vigenere Encryption====================";
+                    cout << "\n====================Simple vigenere Encryption====================" << endl;
                     cout << "\nText : " << text;
-                 
-                    cout << "\nPlease Enter The Key:";
-                    cin >> s;
-                   
-                    
-                    string cipher_text = vigenere_enc(text, keyenc);
-                    cout << "Affine Cipher For Text is: " << cipher_text << endl;
+                    cout << "\nPlease Enter The Keyword:";
+                    cin >> keyenc;
+                    string key = generateKey(text,keyenc);
+                    cout << "Simple Vigenere Cipher For Text is: " << vigenere_enc(text, key) << endl;
                     system("PAUSE");
                     system("CLS");
                 }
-                else if (choose == 3)
+                else if (choose == 4)
                 {
-                    cout << "\n====================Fall vignere cipher Encryption====================";
+                    cout << "\n====================Fall vignere cipher Encryption====================" << endl;
                     cout << "\nText : " << text;
-                    //First key for affine cipher
-                    cout << "\nPlease Enter The First Key:";
-                    cin >> s;
-                    //second key for affine cipher
-                    cout << "\nPlease Enter The Second Key:";
-                    cin >> k;
-                    string cipher_text = affine_enc(text, s, k);
-                    cout << "Affine Cipher For Text is: " << cipher_text << endl;
-                    system("PAUSE");
-                    system("CLS");
+                  
                 }
                 else if (choose == 5)
                 {
-                    cout << "\n====================Playfair Encryption====================";
+                    cout << "\n====================Playfair Encryption====================" << endl;
                     cout << "\nText : " << text << endl;
-                    cout << "PlayFair Cipher For Text is: " << playfair_enc(text) << endl;
+                     playfair_enc(text);
+                    system("PAUSE");
+                    system("CLS");
+                }
+                else if (choose == 6)
+                {
+                    cout << "\n====================Rail Fence Cipher Encryption===================="<<endl;
+                    rail_fence();
+                    cout << endl;
                     system("PAUSE");
                     system("CLS");
                 }
