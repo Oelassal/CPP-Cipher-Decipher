@@ -131,7 +131,7 @@ string generateKey(string str, string key)
              int x = (str[i] + key[i]) % 26;
 
              // convert into alphabets(ASCII)
-             x += 'a';
+             x += 'A';
 
              cipher_text.push_back(x);
          }
@@ -442,12 +442,12 @@ void rail_fence() {
                 }
                 else if (choose == 3)
                 {
-                    cout << "\n====================Simple vigenere Encryption====================" << endl;
+                    cout << "\n====================Simple vigenere Decryption====================" << endl;
                     cout << "\nText : " << text;
                     cout << "\nPlease Enter The Keyword:";
                     cin >> keyenc;
                     string key = generateKey(text, keyenc);
-                    cout << "Simple Vigenere Cipher For Text is: " << vigenere_dec(text, key) << endl;
+                    cout << "Simple Vigenere Decipher For Text is: " << vigenere_dec(text, key) << endl;
                     system("PAUSE");
                     system("CLS");
                 }
