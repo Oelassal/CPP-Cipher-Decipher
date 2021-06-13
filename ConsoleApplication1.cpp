@@ -317,10 +317,11 @@ void rail_fence() {
         for (int i = 0; i < cipher_text.size(); i++)
         {
             // converting in range 0-25
-            char x = (cipher_text[i] - key[i] + 26) % 26;
+            char x = ((cipher_text[i] - key[i] + 26) % 26);
 
             // convert into alphabets(ASCII)
             x += 'A';
+
             orig_text.push_back(x);
         }
         return orig_text;
@@ -446,8 +447,8 @@ void rail_fence() {
                     cout << "\nText : " << text;
                     cout << "\nPlease Enter The Keyword:";
                     cin >> keyenc;
-                    string key = generateKey(text, keyenc);
-                    cout << "Simple Vigenere Decipher For Text is: " << vigenere_dec(text, key) << endl;
+                    string keydec = generateKey(text, keyenc);
+                    cout << "Simple Vigenere Decipher For Text is: " << vigenere_dec(text, keydec) << endl;
                     system("PAUSE");
                     system("CLS");
                 }
