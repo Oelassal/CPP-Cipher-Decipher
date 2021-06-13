@@ -99,7 +99,7 @@ string generateKey(string str, string key)
     *test = result;
     // Return the resulting string
     ofstream outputFile;
-    outputFile.open("D:\\encrypted.txt");
+    outputFile.open("encrypted.txt");
     outputFile << result << endl;
     return result;
 
@@ -248,7 +248,7 @@ string generateKey(string str, string key)
 
         // Return the resulting string
         ofstream outputFile;
-        outputFile.open("D:\\encrypted.txt");
+        outputFile.open("encrypted.txt");
         outputFile << result << endl;
         return result;
     }
@@ -348,12 +348,11 @@ string generateKey(string str, string key)
                     cout << "\n====================Simple vigenere Encryption====================";
                     cout << "\nText : " << text;
                  
-                    cout << "\nPlease Enter The First Key:";
+                    cout << "\nPlease Enter The Key:";
                     cin >> s;
                    
-                    cout << "\nPlease Enter The Second Key:";
-                    cin >> k;
-                    string cipher_text = affine_enc(text, s, k);
+                    
+                    string cipher_text = vigenere_enc(text, keyenc);
                     cout << "Affine Cipher For Text is: " << cipher_text << endl;
                     system("PAUSE");
                     system("CLS");
