@@ -4,7 +4,7 @@
 |Please Notice that playfair encryptionand decryption are still under development. |
 |Feel free to improve this code by forking, or pulling the code into you workspace.|
 |Please Don't Use this code business wise unless referred to the owner of the code.|
-|                                                                                  |
+|__________________________________________________________________________________|
 |**ALERT** : This Version of the application doesn't accept space between words.   |
 |_________________________________________________________________________________*/
 
