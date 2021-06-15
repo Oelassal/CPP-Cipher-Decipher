@@ -10,12 +10,9 @@
 #include <map>
 
 using namespace std;
-ifstream inputFile;
-int choice, choose, s, k, inp;
-string ptr, text, keyenc, word;
 
 
-////////////////// Helpers//////////////////////////////
+////////////////// Identifiers and selection Function/////////
 void WelcomeScreen() {
     cout << "____    __    ____  _______  __        ______   ______  .___  ___. _______ " << endl;
     cout << "\\   \\  /  \\  /   / |   ____||  |      /      | /  __  \\ |   \\/   ||   ____|" << endl;
@@ -25,8 +22,52 @@ void WelcomeScreen() {
     cout << "    \\__/  \\__/     |_______||_______| \\______| \\______/ |__|  |__||_______|" << endl;
     cout << "" << endl;
 }
+ifstream inputFile;
+int choice, choose, s, k, inp;
+string ptr, text, keyenc, word;
+bool alpha[200];
+char table[6][6];
+int dcpKey[105], n;
+int A, B, key, prIdx, x1, x2, y1, y2;
+string pairing, mPlay, kPlay, decTxt = "", encTxt = "";
+//for affine cipher
+int modInverse(int k) {
+    for (int i = 0; i < 26; i++) {
+        int flag = (i * k) % 26;
+        if (flag == 1) {
+            return i;
+        }
+    }
+    return -1;
+}
+//Playfair cipher table constructor
+void constructTable() {
+    string kPlay;
+    cout << "Enter The playfair Key:   " << endl;
+    getline(cin, kPlay);
 
-// input selector
+    int keyIdx = 0;
+    int i, j;
+    for (i = 0; i < 5 && keyIdx < kPlay.size();) {
+        for (j = 0; j < 5 && keyIdx < kPlay.size();) {
+            kPlay[keyIdx] = tolower(kPlay[keyIdx]);
+            while (keyIdx < kPlay.size() && (!isalpha(kPlay[keyIdx]) || alpha[kPlay[keyIdx]])) keyIdx++;
+            if (keyIdx >= kPlay.size())break;
+            if (kPlay[keyIdx] == 'i' || kPlay[keyIdx] == 'j') {
+                table[i][j] = 'i';
+                alpha['i'] = alpha['j'] = 1;
+            }
+            else {
+                table[i][j] = kPlay[keyIdx];
+                alpha[kPlay[keyIdx]] = 1;
+            }
+            keyIdx++;
+            j++;
+        }
+        if (keyIdx < kPlay.size()) i++;
+    }
+}
+//////////////////input selector//////////////////////////////
 string selector() {
     cout << "Please Select the input method:\n1)By Typing\n2)By FileName\nChoice:";
     cin >> inp;
@@ -46,16 +87,6 @@ string selector() {
     }
     }
     return text;
-}
-//for affine cipher
-int modInverse(int k) {
-    for (int i = 0; i < 26; i++) {
-        int flag = (i * k) % 26;
-        if (flag == 1) {
-            return i;
-        }
-    }
-    return -1;
 }
 //simple vigenere key generator 
 string generateKey(string str, string key)
@@ -259,6 +290,91 @@ void rail_fence() {
      }
      
  }
+void sbox_enc(int(&x)[8], int a, int(&k)[3]) 
+{    
+   /*///////////////////////THE RULE///////////////////\ 
+   |P = X1 X2 X3 X4   .......key = k1 k2 k3             |
+   |E(X1 X2 X3 X4, K1 K2 K3) = X3 X4 U1 U2              |
+   |U1 U2 = X1 X2 (+) T1 T2                             |
+   |T1 T2 = S(X3 X4 X3 (+)  K1 K2 K3) ----> MAIN KEY    |
+   ////////////////////////////////////////////////////*/
+    
+    
+    //int a is the divisor
+    //Collecting Values of S-Box text in array determined in integers;
+    int temp[3], temps = 0; 
+    int t[2];
+    int u[2];
+    int resu[4]; //Resu is an array of integers with 4-bit (To Store 0,1 of an integer)
+     //X3 and X4 are preserved at first
+    resu[0] = x[(5 - a)]; 
+    resu[1] = x[(4 - a)];
+    //Temps (values of S-Box) = Values of Inserted Text Raised To The Power Of binary Values of S-box 
+    temp[0] = resu[0] ^ k[2];  
+    temp[1] = resu[1] ^ k[1];
+    temp[2] = resu[0] ^ k[0];
+    for (int j = 0; j < 3; j++)
+    {
+        if (temp[j] == 1)
+            temps += pow(2, j);
+    }
+    //Switch Case for temps determining T1 and T2 values (Temp Text1 & Temp Text2)
+    switch (temps) 
+    {
+    case (0):
+    {
+        u[0] = 1;
+        u[1] = 1;
+        break;
+    }
+    case(1):
+    {
+        u[0] = 0;
+        u[1] = 1;
+        break;
+    }
+    case(2):
+    {
+        u[0] = 0, u[1] = 0;
+        break;
+    }
+    case(3):
+    {
+        u[0] = 1, u[1] = 0;
+        break;
+    }
+    case(4):
+    {
+        u[0] = 0, u[1] = 1;
+        break;
+    }
+    case(5):
+    {
+        u[0] = 0, u[1] = 0;
+        break;
+    }
+    case(6):
+    {
+        u[0] = 1, u[1] = 1;
+        break;
+    }
+    case(7):
+    {
+        u[0] = 1, u[1] = 0;
+        break;
+    }
+    }
+    t[0] = x[7 - a] ^ u[0];
+    t[1] = x[6 - a] ^ u[1];
+    resu[2] = t[0];
+    resu[3] = t[1];
+    for (int j = 0; j < 4; j++)
+    {
+        x[(7 - j) - a] = resu[j];
+    }
+    return;
+
+}
  ///////////////Decryption Functions///////////////////////////
     string caesar_dec(string text, int s) {
         string result = "";
@@ -326,7 +442,77 @@ void rail_fence() {
         }
         return orig_text;
     }
-
+    void sbox_dec(int(&x)[8], int a, int(&k)[3])
+    {
+        int temp[3], temps = 0;
+        int t[2];
+        int u[2];
+        int resu[4];
+        resu[2] = x[(7 - a)];
+        resu[3] = x[(6 - a)];
+        temp[0] = resu[2] ^ k[2];
+        temp[1] = resu[3] ^ k[1];
+        temp[2] = resu[2] ^ k[0];
+        for (int j = 0; j < 3; j++)
+        {
+            if (temp[j] == 1)
+                temps += pow(2, j);
+        }
+        switch (temps)
+        {
+        case (0):
+        {
+            u[0] = 1;
+            u[1] = 1;
+            break;
+        }
+        case(1):
+        {
+            u[0] = 0;
+            u[1] = 1;
+            break;
+        }
+        case(2):
+        {
+            u[0] = 0, u[1] = 0;
+            break;
+        }
+        case(3):
+        {
+            u[0] = 1, u[1] = 0;
+            break;
+        }
+        case(4):
+        {
+            u[0] = 0, u[1] = 1;
+            break;
+        }
+        case(5):
+        {
+            u[0] = 0, u[1] = 0;
+            break;
+        }
+        case(6):
+        {
+            u[0] = 1, u[1] = 1;
+            break;
+        }
+        case(7):
+        {
+            u[0] = 1, u[1] = 0;
+            break;
+        }
+        }
+        t[0] = x[5 - a];
+        t[1] = x[4 - a];
+        resu[0] = t[0] ^ u[0];
+        resu[1] = t[1] ^ u[1];
+        for (int j = 0; j < 4; j++)
+        {
+            x[(7 - j) - a] = resu[j];
+        }
+        return;
+    }
 
 
     int main()
@@ -416,6 +602,49 @@ void rail_fence() {
                     system("PAUSE");
                     system("CLS");
                 }
+                else if (choose == 7)
+                {
+                    vector<int>arr;
+                    int  biarr[8] = { 0,0,0,0,0,0,0,0 }, i, result = 0, temp, n, z;
+                    int key[3];
+                    bool en = false;
+                    string s, rei;
+
+
+                    cout << "Enter the desierd string for Encryption : ";
+                    cin >> s;
+
+                    rei = s;
+                    cout << "Enter the key : ";
+                    for (int j = 0; j < 3; j++)
+                    {
+                        cin >> key[j];
+                    }
+
+                    for (int l = 0; l < s.length(); l++)
+                    {
+                        result = 0;
+                        int n = int(s[l]);
+                        int orp = n;
+                        for (i = 0; n > 0; i++)
+                        {
+                            biarr[i] = n % 2;
+                            n /= 2;
+                        }
+                        sbox_enc(biarr, 0, key); //mara zeo we mara 4 
+                        sbox_enc(biarr, 4, key);
+                        for (int i = 7; i >= 0; i--) //ba7awel mn binary le decimal tany 
+                        {
+                            if (biarr[i] == 1)
+                                result += pow(2, i);
+                        }
+                        rei[l] = ((result - 97) % 26) + 97;
+
+                        cout << s[l];
+                        cout << " " << orp << "  -> " << rei[l] << " " << result << endl;
+                    }
+                    cout << s << " -> " << rei;
+                }
 
                 break;    }
         
@@ -468,6 +697,10 @@ void rail_fence() {
                     cout << "Simple Vigenere Decipher For Text is: " << vigenere_dec(text, keydec) << endl;
                     system("PAUSE");
                     system("CLS");
+                }
+                else if (choose == 7)
+                {
+
                 }
                 break; }
                  
