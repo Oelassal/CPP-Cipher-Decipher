@@ -386,15 +386,21 @@ void rail_fence() {
                     cout << "\nText : " << text;
                     cout << "\nPlease Enter The Keyword:";
                     cin >> keyenc;
-                    string key = generateKey(text,keyenc);
+                    string key = generateKey(text, keyenc);
                     cout << "Simple Vigenere Cipher For Text is: " << vigenere_enc(text, key) << endl;
                     system("PAUSE");
                     system("CLS");
                 }
                 else if (choose == 4)
                 {
-                    cout << "\n====================Fall vignere cipher Encryption====================" << endl;
+                    cout << "\n====================Full vignere cipher Encryption====================" << endl;
                     cout << "\nText : " << text;
+                    cout << "\nPlease Enter The Keyword:";
+                    cin >> keyenc;
+                    string key = generateKey(text, keyenc);
+                    cout << "Simple Vigenere Cipher For Text is: " << vigenere_enc(text, key) << endl;
+                    system("PAUSE");
+                    system("CLS");
                   
                 }
                 else if (choose == 5)
@@ -452,10 +458,19 @@ void rail_fence() {
                     system("PAUSE");
                     system("CLS");
                 }
+                else if (choose == 4)
+                {
+                    cout << "\n====================Full vigenere Decryption====================" << endl;
+                    cout << "\nText : " << text;
+                    cout << "\nPlease Enter The Keyword:";
+                    cin >> keyenc;
+                    string keydec = generateKey(text, keyenc);
+                    cout << "Simple Vigenere Decipher For Text is: " << vigenere_dec(text, keydec) << endl;
+                    system("PAUSE");
+                    system("CLS");
+                }
                 break; }
                  
-            case 3:
-                break;
             default:
                 cout << "Please Check your choice";
 
