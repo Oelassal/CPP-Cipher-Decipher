@@ -212,7 +212,7 @@ int modInverse(int k) {
 string selector() {
     cout << "Please Select the input method:\n1)By Typing\n2)By FileName\nChoice:";
     cin >> inp;
-    switch (inp) {
+   L: switch (inp) {
     case 1: {
         cout << "Please Type your text here:";
         cin >> text;
@@ -220,11 +220,21 @@ string selector() {
     }
 
     case 2: {
-        cout << "Please Type your file name with it's extensions (e.g: WORD.txt)";
+        cout << "Please Type your file name with its extension (e.g: WORD.txt) :";
         cin >> word;
         inputFile.open(word);
+        ifstream myFile(word);
+        if (myFile.fail()) {
+            cout << "File does not exist" << endl;
+            goto L;
+        }
+        else{
         inputFile >> text;
         cout << "\nText is : " << text;
+        }
+       
+        
+       
     }
     }
     return text;
