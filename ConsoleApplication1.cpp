@@ -43,7 +43,7 @@ int modInverse(int k) {
 //Playfair cipher table constructor
 void constructTable() {
     string kPlay;
-    cout << "Enter The playfair Key:   " << endl;
+    cout << "Enter The playfair Key:" << endl;
     getline(cin, kPlay);
 
     int keyIdx = 0;
@@ -65,6 +65,124 @@ void constructTable() {
             j++;
         }
         if (keyIdx < kPlay.size()) i++;
+    }
+
+    for (char ch = 'a'; ch <= 'z'; ch++) {
+        if (!alpha[ch]) {
+            if (ch == 'i' || ch == 'j') {
+                if (alpha[i] || alpha[j]) continue;
+                else {
+                    table[i][j] = 'i';
+                    alpha['i'] = alpha['j'] = 1;
+                }
+            }
+            else table[i][j] = ch;
+
+            alpha[ch] = 1;
+            if (j >= 4) j = 0, i++;
+            else j++;
+
+        }
+    }
+
+    for (i = 0; i < 5; i++) {
+        for (j = 0; j < 5; j++) {
+            cout << table[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+//playfair constructing pairs
+void constructPairs(){
+prIdx = 0;
+for (int i = 0; i < mPlay.size(); i++) {
+    if (!isalpha(mPlay[i])) continue;
+    if ((i == mPlay.size() - 1 && prIdx % 2 == 0) || mPlay[i] == mPlay[i + 1]) {
+        pairing[prIdx] = mPlay[i];
+        prIdx++;
+        pairing[prIdx] = 'x';
+        prIdx++;
+    }
+    else pairing[prIdx++] = mPlay[i];
+}
+pairing[prIdx] = '\0';
+cout << pairing << endl;
+}
+//find elements in table
+void findInTableEN(){
+for (int idx = 0; idx < prIdx; idx++) {
+    bool fnd = 0;
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (pairing[idx] == table[i][j]) {
+                x1 = i;
+                y1 = j;
+                fnd = 1;
+            }
+            else if ((pairing[prIdx] == 'i' || pairing[prIdx] == 'j') && table[i][j] == 'i') {
+                x1 = i;
+                y1 = j;
+                fnd = 1;
+            }
+        }
+        if (fnd) break;
+    }
+
+    fnd = 0; idx++;
+    for (int i = 0; i < 5; i++) {
+        for (int j = 0; j < 5; j++) {
+            if (pairing[idx] == table[i][j]) {
+                x2 = i;
+                y2 = j;
+                fnd = 1;
+            }
+            else if ((pairing[prIdx] == 'i' || pairing[prIdx] == 'j') && table[i][j] == 'i') {
+                x2 = i;
+                y2 = j;
+                fnd = 1;
+            }
+        }
+        if (fnd) break;
+    }
+    encrypt();
+}
+}
+void findInTableDE() {
+    for (int idx = 0; idx < prIdx; idx++) {
+        bool fnd = 0;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (pairing[idx] == table[i][j]) {
+                    x1 = i;
+                    y1 = j;
+                    fnd = 1;
+                }
+                else if ((pairing[prIdx] == 'i' || pairing[prIdx] == 'j') && table[i][j] == 'i') {
+                    x1 = i;
+                    y1 = j;
+                    fnd = 1;
+                }
+            }
+            if (fnd) break;
+        }
+
+        fnd = 0; idx++;
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (pairing[idx] == table[i][j]) {
+                    x2 = i;
+                    y2 = j;
+                    fnd = 1;
+                }
+                else if ((pairing[prIdx] == 'i' || pairing[prIdx] == 'j') && table[i][j] == 'i') {
+                    x2 = i;
+                    y2 = j;
+                    fnd = 1;
+                }
+            }
+            if (fnd) break;
+        }
+        decrypt();
     }
 }
 //////////////////input selector//////////////////////////////
@@ -103,6 +221,22 @@ string generateKey(string str, string key)
     }
     return key;
 }
+void constructPairs() {
+    prIdx = 0;
+    for (int i = 0; i < mPlay.size(); i++) {
+        if (!isalpha(mPlay[i])) continue;
+        if ((i == mPlay.size() - 1 && prIdx % 2 == 0) || mPlay[i] == mPlay[i + 1]) {
+            pairing[prIdx] = mPlay[i];
+            prIdx++;
+            pairing[prIdx] = 'x';
+            prIdx++;
+        }
+        else pairing[prIdx++] = mPlay[i];
+    }
+    pairing[prIdx] = '\0';
+    cout << pairing << endl;
+}
+
 ///////////////End of Helpers///////////////////////////
 
  string caesar_enc(string text, int s, string *test)
@@ -168,91 +302,21 @@ string generateKey(string str, string key)
          }
          return cipher_text;
      }
-void playfair_enc(string origin) {
-     int i, j, k, n;
-     string s;
-     //Enter key for playfair cipher
-     cout << "Enter the key:" << endl;
-     string key;
-     cin >> key;
-     for (i = 0; i < origin.size(); i++) {
-         if (origin[i] != ' ')
-             s += origin[i];
+ //playfair encrypt
+ void encrypt() {
+     if (x1 == x2) {
+         encTxt += table[x1][(y1 + 1) % 5];
+         encTxt += table[x2][(y2 + 1) % 5];
      }
-     vector<vector<char> > a(5, vector<char>(5, ' '));
-     n = 5;
-     map<char, int> mp;
-     k = 0;
-     int pi, pj;
-     for (i = 0; i < n; i++) {
-         for (j = 0; j < n; j++) {
-             while (mp[key[k]] > 0 && k < key.size()) {
-                 k++;
-             }
-             if (k < key.size()) {
-                 a[i][j] = key[k];
-                 mp[key[k]]++;
-                 pi = i;
-                 pj = j;
-             }
-             if (k == key.size())
-                 break;
-         }
-         if (k == key.size())
-             break;
+     else if (y1 == y2) {
+         encTxt += table[(x1 + 1) % 5][y1];
+         encTxt += table[(x2 + 1) % 5][y2];
      }
-     k = 0;
-     for (; i < n; i++) {
-         for (; j < n; j++) {
-             while (mp[char(k + 'a')] > 0 && k < 26) {
-                 k++;
-             }
-             if (char(k + 'a') == 'j') {
-                 j--;
-                 k++;
-                 continue;
-             }
-             if (k < 26) {
-                 a[i][j] = char(k + 'a');
-                 mp[char(k + 'a')]++;
-             }
-         }
-         j = 0;
-     }
-     string ans;
-     if (s.size() % 2 == 1)
-         s += "x";
-     for (i = 0; i < s.size() - 1; i++) {
-         if (s[i] == s[i + 1])
-             s[i + 1] = 'x';
-     }
-     map<char, pair<int, int> > mp2;
-     for (i = 0; i < n; i++) {
-         for (j = 0; j < n; j++) {
-             mp2[a[i][j]] = make_pair(i, j);
-         }
-     }
+     else {
+         encTxt += table[x1][y2];
+         encTxt += table[x2][y1];
 
-     for (i = 0; i < s.size() - 1; i += 2) {
-         int y1 = mp2[s[i]].first;
-         int x1 = mp2[s[i]].second;
-         int y2 = mp2[s[i + 1]].first;
-         int x2 = mp2[s[i + 1]].second;
-         if (y1 == y2) {
-             ans += a[y1][(x1 + 1) % 5];
-             ans += a[y1][(x2 + 1) % 5];
-         }
-         else if (x1 == x2) {
-             ans += a[(y1 + 1) % 5][x1];
-             ans += a[(y2 + 1) % 5][x2];
-         }
-         else {
-             ans += a[y1][x2];
-             ans += a[y2][x1];
-         }
      }
-     cout << "PlayFair Cipher For Text is: " << ans << endl;
-   
  }
 void rail_fence() {
      int t, n, m, i, j, k, sum = 0;
@@ -375,7 +439,9 @@ void sbox_enc(int(&x)[8], int a, int(&k)[3])
     return;
 
 }
- ///////////////Decryption Functions///////////////////////////
+///////////////////////////////////////////////////////////////
+///////////////Decryption Functions///////////////////////////
+
     string caesar_dec(string text, int s) {
         string result = "";
 
@@ -513,6 +579,21 @@ void sbox_enc(int(&x)[8], int a, int(&k)[3])
         }
         return;
     }
+    void decrypt() {
+        if (x1 == x2) {
+            decTxt += table[x1][(y1 - 1 + 5) % 5];
+            decTxt += table[x2][(y2 - 1 + 5) % 5];
+        }
+        else if (y1 == y2) {
+            decTxt += table[(x1 - 1 + 5) % 5][y1];
+            decTxt += table[(x2 - 1 + 5) % 5][y2];
+        }
+        else {
+            decTxt += table[x1][y2];
+            decTxt += table[x2][y1];
+
+        }
+    }
 
 
     int main()
@@ -592,7 +673,15 @@ void sbox_enc(int(&x)[8], int a, int(&k)[3])
                 else if (choose == 5)
                 {
                     cout << "\n====================Playfair Encryption====================" << endl;
-                 
+                    for (int i = 0; i < mPlay.length(); i++)
+                    {
+                        mPlay[i] = tolower(mPlay[i]);
+                    }
+                    pairing = mPlay;
+                    constructTable();
+                    constructPairs();
+                    findInTableEN();
+                    cout << "Play_Fair Cipher Encryption:  " << encTxt << endl;
                 }
                 else if (choose == 6)
                 {
